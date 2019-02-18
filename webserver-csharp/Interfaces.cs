@@ -10,21 +10,21 @@ namespace nl.sogyo.webserver
 	public enum HttpMethod {GET, POST}
 
 	public interface Request {
-		HttpMethod getHTTPMethod();
-		string getResourcePath();
-		List<string> getHeaderParameterNames();
-		String getHeaderParameterValue(String name);
-		List<string> getParameterNames();
-		string getParameterValue(String name);
+		HttpMethod GetHTTPMethod();
+		string GetResourcePath();
+		List<string> GetHeaderParameterNames();
+		String GetHeaderParameterValue(String name);
+		List<string> GetParameterNames();
+		string GetParameterValue(String name);
 	}
 
 	public interface Response {
-		HttpStatusCode getStatus();
-		void setStatus(HttpStatusCode status);
-		DateTime getDate();
-		string getContent();
-		void setContent(String content);
-		string toString();
+		HttpStatusCode GetStatus();
+		void SetStatus(HttpStatusCode status);
+		DateTime GetDate();
+		string GetContent();
+		void SetContent(String content);
+		string ToString();
 	}
 
 	public interface WebApplication {
