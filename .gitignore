@@ -1,7 +1,8 @@
-*.userprefs
-.settings
 webserver-csharp/bin
 webserver-csharp/obj
+*.userprefs
+.settings
 .vs
 *.pdb
 *.cache
+*.exe
