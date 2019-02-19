@@ -38,6 +38,8 @@
     <Compile Include="ResponseMessage.cs" />
     <Compile Include="Webserver.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="WebSocket.cs" />
+    <Compile Include="WebSocketResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

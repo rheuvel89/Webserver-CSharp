@@ -62,7 +62,7 @@ namespace nl.sogyo.webserver {
         }
 
         public string GetHeaderParameterValue(string name) {
-            return headerParameters.Find(p => p.Key == name).Value;
+            return headerParameters.Find(p => p.Key.ToLower() == name.ToLower())?.Value;
         }
 
         public HttpMethod GetHTTPMethod() {
@@ -74,7 +74,7 @@ namespace nl.sogyo.webserver {
         }
 
         public string GetParameterValue(string name) {
-            return parameters.Find(p => p.Key == name).Value;
+            return parameters.Find(p => p.Key.ToLower() == name.ToLower())?.Value;
         }
 
         public string GetResourcePath() {

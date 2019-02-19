@@ -10,7 +10,7 @@ namespace nl.sogyo.webserver {
 
         string content =  "";
 
-        public HtmlDocument(RequestMessage request) {
+        public HtmlDocument(Request request) {
             AddLine("You did an HTTP GET request.");
             AddLine("Requested resource: " + request.GetResourcePath());
             AddLine();

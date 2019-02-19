@@ -19,8 +19,8 @@ namespace nl.sogyo.webserver {
 		static void HandleRequest(Object socket) {
 			Socket ssocket = socket as Socket;
             string input = ReadMessage(ssocket);
-            RequestMessage httpRequest = RequestMessage.parse(input);
-            ResponseMessage response = ProcessNormalRequest(httpRequest);
+            Request httpRequest = RequestMessage.parse(input);
+            Response response = ProcessRequest(httpRequest);
             SendMessage(ssocket, response);
 			ssocket.Close();
 		}
@@ -41,12 +41,31 @@ namespace nl.sogyo.webserver {
             return input;
         }
 
-        static ResponseMessage ProcessNormalRequest(RequestMessage httpRequest) {
+        static Response ProcessRequest(Request httpRequest) {
+            bool isWebSocketRequest = httpRequest.GetHeaderParameterValue("connection").ToLower() == "upgrade" &&
+                                      httpRequest.GetHeaderParameterValue("upgrade").ToLower() == "websocket";
+            return isWebSocketRequest ? ProcessWebSocketRequest(httpRequest) : ProcessNormalRequest(httpRequest);
+        }
+
+        static Response ProcessWebSocketRequest(Request httpRequest) {
+            WebSocket webSocket = new WebSocket();
+            if (webSocket == null || !webSocket.Connected) {
+                webSocket = new WebSocket();
+                return webSocket.GetHandshake(httpRequest);
+            }
+            while (webSocket)
+            
+
+            return null;
+        }
+
+        static Response ProcessNormalRequest(Request httpRequest) {
+            httpRequest.GetHeaderParameterValue("Asd");
             HtmlDocument htmlDocument = new HtmlDocument(httpRequest);
             return new ResponseMessage(htmlDocument.ToString(), DateTime.Now, HttpStatusCode.OK);
         }
 
-        static void SendMessage(Socket socket, ResponseMessage response) {
+        static void SendMessage(Socket socket, Response response) {
             NetworkStream networkStream = new NetworkStream(socket);
             StreamWriter writer = new StreamWriter(networkStream);
             writer.Write(response);

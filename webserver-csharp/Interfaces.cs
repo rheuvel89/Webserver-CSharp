@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace nl.sogyo.webserver
 {
 	public enum HttpStatusCode {
-		OK = 200, NotFound = 404, ServerError = 500
+        SwitchingProtocols = 101, OK = 200, NotFound = 404, ServerError = 500
 	}
 
 	public enum HttpMethod {GET, POST}
@@ -28,7 +28,7 @@ namespace nl.sogyo.webserver
 	}
 
 	public interface WebApplication {
-		void process(Request request, Response response);
+		void Process(Request request, Response response);
 	}
 
 	public interface Cookie {
