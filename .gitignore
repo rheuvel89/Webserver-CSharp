@@ -1,7 +1,7 @@
-webserver-csharp/bin
-webserver-csharp/obj
-Webserver.UnitTests/bin
-Webserver.UnitTests/obj
+webserver-csharp/bin/
+webserver-csharp/obj/
+Webserver.UnitTests/bin/
+Webserver.UnitTests/obj/
 TestResults/
 packages/
 *.userprefs

@@ -46,7 +46,7 @@ namespace nl.sogyo.webserver {
                 byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(accept));
                 accept = Convert.ToBase64String(hash);
             }
-            return accept;//"s3pPLMBiTxaQ9kYGzzhZRbK+xOo=";//
+            return accept;
         }
 
     }

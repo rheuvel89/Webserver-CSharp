@@ -8,7 +8,7 @@ namespace nl.sogyo.webserver {
 
     public class HttpServer : WebApplication {
 
-        public bool Connected { get; private set; } = false;
+        public bool Connected { get; set; } = false;
 
         public Response Process(Request request) {
             HtmlDocument htmlDocument = new HtmlDocument(request);

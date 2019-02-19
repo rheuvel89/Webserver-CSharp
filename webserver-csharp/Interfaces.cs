@@ -28,7 +28,7 @@ namespace nl.sogyo.webserver
 	}
 
 	public interface WebApplication {
-        bool Connected { get; }
+        bool Connected { get; set; }
         Response Process(Request request);
 	}
 

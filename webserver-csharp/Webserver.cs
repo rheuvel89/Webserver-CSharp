@@ -21,26 +21,38 @@ namespace nl.sogyo.webserver {
             WebSocketServer webSocketServer = null;
             WebApplication server = null;
             do {
-                Request request = ReadMessage(ssocket);
-                server = SelectServer(webSocketServer, request);
+                server = TryHandleRequest(ssocket, server, webSocketServer);
                 webSocketServer = server is WebSocketServer ? (WebSocketServer)server : webSocketServer;
-                Response response = server.Process(request);
-                SendMessage(ssocket, response); 
-            } while (server.Connected);
+            } while (server != null && server.Connected);
             ssocket.Close();
             Console.WriteLine("[DEBUG] Connection closed...");
 		}
 
+        static WebApplication TryHandleRequest(Socket ssocket, WebApplication server, WebSocketServer webSocketServer) {
+            try {
+                Request request = ReadMessage(ssocket);
+                server = SelectServer(webSocketServer, request);
+                Response response = server.Process(request);
+                SendMessage(ssocket, response);
+            } catch (SocketException e) {
+                SendMessage(ssocket, new HttpResponseMessage("", DateTime.Now, HttpStatusCode.ServerError));
+                Console.WriteLine("[DEBUG] Error: " + e.ToString());
+            }
+            return server;
+        }
+
         static RequestMessage ReadMessage(Socket socket) {
             NetworkStream networkStream = new NetworkStream(socket);
             StreamReader reader = new StreamReader(networkStream);
-            string line = null;
+            string line = "";
             string input = "";
-            while (line != "") {
+            do {
                 line = reader.ReadLine();
                 input += line + "\r\n";
                 Console.WriteLine(line);
-            }
+            } while (!string.IsNullOrEmpty(line));
+            if (line == null)
+                throw new SocketException((int)SocketError.Fault);
             reader.Close();
             networkStream.Close();
             return RequestMessage.parse(input); ;
@@ -50,7 +62,7 @@ namespace nl.sogyo.webserver {
             bool isWebSocketRequest = httpRequest.GetHeaderParameterValue("connection").ToLower() == "upgrade" &&
                                       httpRequest.GetHeaderParameterValue("upgrade").ToLower() == "websocket";
             if (isWebSocketRequest) {
-                return webSocketServer != null && webSocketServer.Connected ? webSocketServer : new WebSocketServer();
+                return webSocketServer?.Connected == true ? webSocketServer : new WebSocketServer();
             } else {
                 return new HttpServer();
             }
