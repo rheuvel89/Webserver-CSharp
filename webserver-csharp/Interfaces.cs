@@ -28,7 +28,8 @@ namespace nl.sogyo.webserver
 	}
 
 	public interface WebApplication {
-		void Process(Request request, Response response);
+        bool Connected { get; }
+        Response Process(Request request);
 	}
 
 	public interface Cookie {

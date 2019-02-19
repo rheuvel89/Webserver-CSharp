@@ -16,21 +16,26 @@ namespace nl.sogyo.webserver {
 			}
 		}
 
-		static void HandleRequest(Object socket) {
-			Socket ssocket = socket as Socket;
-            string input = ReadMessage(ssocket);
-            Request httpRequest = RequestMessage.parse(input);
-            Response response = ProcessRequest(httpRequest);
-            SendMessage(ssocket, response);
-			ssocket.Close();
+        static void HandleRequest(Object socket) {
+            Socket ssocket = socket as Socket;
+            WebSocketServer webSocketServer = null;
+            WebApplication server = null;
+            do {
+                Request request = ReadMessage(ssocket);
+                server = SelectServer(webSocketServer, request);
+                webSocketServer = server is WebSocketServer ? (WebSocketServer)server : webSocketServer;
+                Response response = server.Process(request);
+                SendMessage(ssocket, response); 
+            } while (server.Connected);
+            ssocket.Close();
+            Console.WriteLine("[DEBUG] Connection closed...");
 		}
 
-        static string ReadMessage(Socket socket) {
+        static RequestMessage ReadMessage(Socket socket) {
             NetworkStream networkStream = new NetworkStream(socket);
             StreamReader reader = new StreamReader(networkStream);
             string line = null;
             string input = "";
-            //read the input until a blank line is read
             while (line != "") {
                 line = reader.ReadLine();
                 input += line + "\r\n";
@@ -38,31 +43,17 @@ namespace nl.sogyo.webserver {
             }
             reader.Close();
             networkStream.Close();
-            return input;
+            return RequestMessage.parse(input); ;
         }
 
-        static Response ProcessRequest(Request httpRequest) {
+        static WebApplication SelectServer(WebSocketServer webSocketServer, Request httpRequest) {
             bool isWebSocketRequest = httpRequest.GetHeaderParameterValue("connection").ToLower() == "upgrade" &&
                                       httpRequest.GetHeaderParameterValue("upgrade").ToLower() == "websocket";
-            return isWebSocketRequest ? ProcessWebSocketRequest(httpRequest) : ProcessNormalRequest(httpRequest);
-        }
-
-        static Response ProcessWebSocketRequest(Request httpRequest) {
-            WebSocket webSocket = new WebSocket();
-            if (webSocket == null || !webSocket.Connected) {
-                webSocket = new WebSocket();
-                return webSocket.GetHandshake(httpRequest);
+            if (isWebSocketRequest) {
+                return webSocketServer != null && webSocketServer.Connected ? webSocketServer : new WebSocketServer();
+            } else {
+                return new HttpServer();
             }
-            while (webSocket)
-            
-
-            return null;
-        }
-
-        static Response ProcessNormalRequest(Request httpRequest) {
-            httpRequest.GetHeaderParameterValue("Asd");
-            HtmlDocument htmlDocument = new HtmlDocument(httpRequest);
-            return new ResponseMessage(htmlDocument.ToString(), DateTime.Now, HttpStatusCode.OK);
         }
 
         static void SendMessage(Socket socket, Response response) {
