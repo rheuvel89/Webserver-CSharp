@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace nl.sogyo.webserver {
 
-    public class WebSocketResponseMessage : Response {
+    public class WebSocketHandShakeMessage : Response {
 
         private string content;
         private DateTime date;
@@ -18,7 +18,7 @@ namespace nl.sogyo.webserver {
         private string upgrade = "websocket";
         private List<HeaderParameter> headerParameters = new List<HeaderParameter>();
 
-        public WebSocketResponseMessage(DateTime date, HttpStatusCode statusCode) {
+        public WebSocketHandShakeMessage(DateTime date, HttpStatusCode statusCode) {
             this.date = date;
             this.statusCode = statusCode;
         }

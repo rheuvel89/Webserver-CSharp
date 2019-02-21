@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace nl.sogyo.webserver
 {
@@ -29,8 +30,9 @@ namespace nl.sogyo.webserver
 
 	public interface WebApplication {
         bool Connected { get; set; }
+        WebApplication HandleRequest();
         Response Process(Request request);
-	}
+    }
 
 	public interface Cookie {
 		string getName();
