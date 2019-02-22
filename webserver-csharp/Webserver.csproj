@@ -52,17 +52,23 @@
   <ItemGroup>
     <Compile Include="HeaderParameter.cs" />
     <Compile Include="HtmlDocument.cs" />
-    <Compile Include="HttpServer.cs" />
+    <Compile Include="HttpHandler.cs" />
+    <Compile Include="MessageDispatcher.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="HttpRequestMessage.cs" />
     <Compile Include="HttpResponseMessage.cs" />
-    <Compile Include="Webserver.cs" />
+    <Compile Include="WebServer.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="WebSocketFrame.cs" />
-    <Compile Include="WebSocketServer.cs" />
+    <Compile Include="WebSocketHandler.cs" />
     <Compile Include="WebSocketHandShakeMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="chat.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

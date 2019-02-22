@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace nl.sogyo.webserver {
 
-    public class HttpServer : WebApplication {
+    public class HttpHandler : WebServerHandler {
 
         public bool Connected { get; set; } = false;
         private Socket socket;
 
-        public HttpServer(Socket socket) {
+        public HttpHandler(Socket socket) {
             this.socket = socket;
         }
 
-        public WebApplication HandleRequest() {
-            WebApplication server = null;
+        public WebServerHandler HandleRequest() {
+            WebServerHandler server = null;
             try {
                 Request request = ReadMessage();
                 server = SelectServer(request);
@@ -43,17 +43,31 @@ namespace nl.sogyo.webserver {
             } while (!string.IsNullOrEmpty(line));
             if (line == null)
                 throw new SocketException((int)SocketError.AddressAlreadyInUse);
-
-
             reader.Close();
             networkStream.Close();
             return HttpRequestMessage.parse(input);
         }
 
-        public WebApplication SelectServer(Request httpRequest) {
+        public WebServerHandler SelectServer(Request httpRequest) {
             bool isWebSocketRequest = httpRequest.GetHeaderParameterValue("connection").ToLower() == "upgrade" &&
                                       httpRequest.GetHeaderParameterValue("upgrade").ToLower() == "websocket";
-            return isWebSocketRequest ? new WebSocketServer(socket) : (WebApplication)this;
+            if (isWebSocketRequest) {
+                int id = this.GetHashCode() % 100;
+                return new WebSocketHandler(socket, id);
+            } else {
+                return this;
+            }
+        }
+
+        public Response Process(Request request) {
+            HtmlDocument htmlDocument = null;
+            try {
+                htmlDocument = new HtmlDocument(request.GetResourcePath());
+                //htmlDocument = new HtmlDocument(request);
+            } catch (IOException ioe) {
+                return new HttpResponseMessage("[404] Resource " + request.GetResourcePath() + " not found", DateTime.Now, HttpStatusCode.NotFound);
+            }
+            return new HttpResponseMessage(htmlDocument.ToString(), DateTime.Now, HttpStatusCode.OK);
         }
 
         public void SendMessage(Response response) {
@@ -63,11 +77,6 @@ namespace nl.sogyo.webserver {
             writer.WriteLine();
             writer.Close();
             networkStream.Close();
-        }
-
-        public Response Process(Request request) {
-            HtmlDocument htmlDocument = new HtmlDocument(request);
-            return new HttpResponseMessage(htmlDocument.ToString(), DateTime.Now, HttpStatusCode.OK);
         }
 
     }

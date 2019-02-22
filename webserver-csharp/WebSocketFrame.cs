@@ -9,10 +9,11 @@ namespace nl.sogyo.webserver {
     public class WebSocketFrame {
 
         public int Size { get; private set; }
+        public int OpCode { get; private set; }
         public byte[] Frame {
             get { return (byte[])frame.Clone(); }
         }
-
+        
         private byte[] frame;
         private byte[] mask;
         private byte[] data;
@@ -23,6 +24,7 @@ namespace nl.sogyo.webserver {
             this.frame = frame;
             Size = frameSize;
             isMaskSet = IsMaskSet(frame);
+            OpCode = frame[0] & 0b00001111;
             int maskOffset = ExtractMaskOffset();
             mask = ExtractMask(maskOffset);
             int dataOffset = maskOffset + (isMaskSet ? 4 : 0);
@@ -34,6 +36,7 @@ namespace nl.sogyo.webserver {
             this.data = data;
             frame = new byte[256];
             frame[0] = 129;
+            OpCode = frame[0] & 0b00001111;
             payloadLength = data.Length;
             frame[1] = (byte)payloadLength;
             int dataOffset = 2;
@@ -119,6 +122,14 @@ namespace nl.sogyo.webserver {
 
         public static WebSocketFrame Parse(byte[] frame, int frameSize) {
             return new WebSocketFrame(frame, frameSize);
+        }
+
+        public static string ToHexString(byte[] frame, int length) {
+            string returnString = "";
+            for (int i = 0; i < length; i++) {
+                returnString += frame[i].ToString("X2");
+            }
+            return returnString;
         }
 
     }

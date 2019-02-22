@@ -8,28 +8,32 @@ using System.Threading.Tasks;
 
 namespace nl.sogyo.webserver {
 
-    public class WebSocketServer : WebApplication {
+    public class WebSocketHandler : WebServerHandler {
 
         private static readonly string MAGIC_STRING = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
         public bool Connected { get; set; } = false;
+
+        private int id;
 
         private Socket socket;
         private string secWebSocketKey;
         private string secWebSocketVersion;
         private string secWebSocketAccept;
 
-        public WebSocketServer(Socket socket) {
+        public WebSocketHandler(Socket socket, int id) {
+            this.id = id;
             this.socket = socket;
         }
 
-        public WebApplication HandleRequest() {
+        public WebServerHandler HandleRequest() {
             WebSocketFrame incomingFrame = ReadMessage();
             WebSocketFrame outgoingFrame = Process(incomingFrame);
-            SendMessage(outgoingFrame);
+            if (outgoingFrame != null) {
+                MessageDispatcher.Dispatch(outgoingFrame);
+            }
             return this;
         }
-
 
         public WebSocketFrame ReadMessage() {
             NetworkStream networkStream = new NetworkStream(socket);
@@ -43,10 +47,10 @@ namespace nl.sogyo.webserver {
                 remainingByes = (isMaskSet ? 4 : 0) + BitConverter.ToInt16(frame, 2);
                 index += 2;
             } else if ((frame[1] & 0b01111111) == 127) {
-                throw new NotImplementedException();
                 networkStream.Read(frame, index, 8);
                 remainingByes = (isMaskSet ? 4 : 0) + BitConverter.ToInt32(frame, 2);
                 index += 8;
+                throw new NotImplementedException();
             }
             networkStream.Read(frame, index, remainingByes);
             networkStream.Close();
@@ -57,7 +61,12 @@ namespace nl.sogyo.webserver {
             return GetHandshake(request);
         }
         public WebSocketFrame Process(WebSocketFrame webSocketFrame) {
-            return new WebSocketFrame("From server: " + webSocketFrame.AsString());
+            WebSocketFrame response = null;
+            switch (webSocketFrame.OpCode) {
+                case 1: response = new WebSocketFrame("[" + id + "]: " + webSocketFrame.AsString()); break;
+                case 8: Connected = false; break;
+            }
+            return response;
         }
 
 
