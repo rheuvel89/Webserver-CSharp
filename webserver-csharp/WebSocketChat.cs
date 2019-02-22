@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace nl.sogyo.webserver {
 
-    public class WebSocketHandler : WebServerHandler {
+    public class WebSocketChat : WebSocketApplication {
 
         private static readonly string MAGIC_STRING = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
@@ -21,21 +21,22 @@ namespace nl.sogyo.webserver {
         private string secWebSocketVersion;
         private string secWebSocketAccept;
 
-        public WebSocketHandler(Socket socket, int id) {
+        public WebSocketChat(Socket socket, int id) {
             this.id = id;
             this.socket = socket;
         }
 
-        public WebServerHandler HandleRequest() {
-            WebSocketFrame incomingFrame = ReadMessage();
-            WebSocketFrame outgoingFrame = Process(incomingFrame);
-            if (outgoingFrame != null) {
-                MessageDispatcher.Dispatch(outgoingFrame);
+        public void Start() {
+            while (Connected) {
+                WebSocketFrame incomingFrame = ReadMessage();
+                WebSocketFrame outgoingFrame = Process(incomingFrame);
+                if (outgoingFrame != null) {
+                    WebSocketFrameDispatcher.Dispatch(outgoingFrame);
+                }
             }
-            return this;
         }
 
-        public WebSocketFrame ReadMessage() {
+        private WebSocketFrame ReadMessage() {
             NetworkStream networkStream = new NetworkStream(socket);
             byte[] frame = new byte[256];
             networkStream.Read(frame, 0, 2);
@@ -57,10 +58,10 @@ namespace nl.sogyo.webserver {
             return WebSocketFrame.Parse(frame);
         }
 
-        public Response Process(Request request) {
+        public WebSocketHandShakeResponse Process(Request request) {
             return GetHandshake(request);
         }
-        public WebSocketFrame Process(WebSocketFrame webSocketFrame) {
+        private WebSocketFrame Process(WebSocketFrame webSocketFrame) {
             WebSocketFrame response = null;
             switch (webSocketFrame.OpCode) {
                 case 1: response = new WebSocketFrame("[" + id + "]: " + webSocketFrame.AsString()); break;
@@ -69,20 +70,19 @@ namespace nl.sogyo.webserver {
             return response;
         }
 
-
         public void SendMessage(WebSocketFrame webSocketFrame) {
             NetworkStream networkStream = new NetworkStream(socket);
             networkStream.Write(webSocketFrame.Frame, 0, webSocketFrame.Size);
             networkStream.Close();
         }
 
-        private Response GetHandshake(Request request) {
+        private WebSocketHandShakeResponse GetHandshake(Request request) {
             secWebSocketKey = request.GetHeaderParameterValue("sec-webSocket-key");
             secWebSocketVersion = request.GetHeaderParameterValue("sec-webSocket-version");
             if (secWebSocketKey == null || secWebSocketVersion != "13")
-                return new WebSocketHandShakeMessage(DateTime.Now, HttpStatusCode.ServerError);
+                return new WebSocketHandShakeResponse(DateTime.Now, HttpStatusCode.ServerError);
             secWebSocketAccept = GetSocketAccept(secWebSocketKey);
-            WebSocketHandShakeMessage webSocketResponse = new WebSocketHandShakeMessage(DateTime.Now, HttpStatusCode.SwitchingProtocols);
+            WebSocketHandShakeResponse webSocketResponse = new WebSocketHandShakeResponse(DateTime.Now, HttpStatusCode.SwitchingProtocols);
             webSocketResponse.PutParamter("Sec-WebSocket-Accept", secWebSocketAccept);
             //webSocketResponse.PutParamter("Sec-WebSocket-Protocol", "chat");
             Connected = true;
@@ -96,10 +96,6 @@ namespace nl.sogyo.webserver {
                 accept = Convert.ToBase64String(hash);
             }
             return accept;
-        }
-
-        public void SendMessage(Response response) {
-            throw new NotImplementedException();
         }
 
     }

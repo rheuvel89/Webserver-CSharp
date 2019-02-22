@@ -27,10 +27,11 @@ namespace nl.sogyo.webserver {
         string ToString();
     }
 
-    public interface WebServerHandler {
+    public interface WebSocketApplication {
         bool Connected { get; set; }
-        WebServerHandler HandleRequest();
-        Response Process(Request request);
+        void Start();
+        WebSocketHandShakeResponse Process(Request request);
+        void SendMessage(WebSocketFrame webSocketFrame);
     }
 
     public interface Cookie {

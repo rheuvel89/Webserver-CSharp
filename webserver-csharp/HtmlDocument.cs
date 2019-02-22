@@ -26,7 +26,7 @@ namespace nl.sogyo.webserver {
             FileStream htmlFile = null;
             StreamReader reader = null;
             try {
-                path = Directory.GetCurrentDirectory() + path;
+                path = Directory.GetCurrentDirectory() + "\\Resources" + path;
                 htmlFile = File.OpenRead(path);
                 reader = new StreamReader(htmlFile);
                 content = reader.ReadToEnd();

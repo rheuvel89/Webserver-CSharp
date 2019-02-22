@@ -6,38 +6,38 @@ using System.Threading.Tasks;
 
 namespace nl.sogyo.webserver {
 
-    public class MessageDispatcher {
+    public class WebSocketFrameDispatcher {
 
-        private static MessageDispatcher messageDispatcher = new MessageDispatcher();
+        private static WebSocketFrameDispatcher dispatcher = new WebSocketFrameDispatcher();
         private List<ServerHandlerListener> listeners = new List<ServerHandlerListener>();
 
         public static void AddListener(ServerHandlerListener listener) {
-            lock (messageDispatcher) {
-                messageDispatcher.listeners.Add(listener);
+            lock (dispatcher) {
+                dispatcher.listeners.Add(listener);
             }
         }
 
         public static void RemoveListener(ServerHandlerListener listener) {
-            lock (messageDispatcher) {
-                messageDispatcher.listeners.Remove(listener);
+            lock (dispatcher) {
+                dispatcher.listeners.Remove(listener);
             }
         }
 
         public static void ClearListeners() {
-            lock (messageDispatcher) {
-                messageDispatcher.listeners.Clear();
+            lock (dispatcher) {
+                dispatcher.listeners.Clear();
             }
         }
 
         public static void Dispatch(Response response) {
-            lock (messageDispatcher) {
-                messageDispatcher.listeners.ForEach(l => l.OnServerMessage(response));
+            lock (dispatcher) {
+                dispatcher.listeners.ForEach(l => l.OnServerMessage(response));
             }
         }
 
         public static void Dispatch(WebSocketFrame frame) {
-            lock (messageDispatcher) {
-                messageDispatcher.listeners.ForEach(l => l.OnServerMessage(frame));
+            lock (dispatcher) {
+                dispatcher.listeners.ForEach(l => l.OnServerMessage(frame));
             }
         }
 

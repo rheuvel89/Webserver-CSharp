@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace nl.sogyo.webserver {
 
-    public class HttpRequestMessage : Request {
+    public class HttpRequest : Request {
 
         private string request, resourceParameter, version;
         private HttpMethod httpMethod;
         private List<HeaderParameter> headerParameters = new List<HeaderParameter>();
         private List<Parameter> parameters = new List<Parameter>();   
 
-        public static HttpRequestMessage parse(string request) {
-            return new HttpRequestMessage(request);
+        public static HttpRequest parse(string request) {
+            return new HttpRequest(request);
         }
 
-        private HttpRequestMessage(string request) {
+        private HttpRequest(string request) {
             this.request = request;
             int headerLineEnd = request.IndexOf("\r\n") + 2;
             int headerParametersEnd = request.IndexOf("\r\n\r\n") + 2;

@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="HeaderParameter.cs" />
     <Compile Include="HtmlDocument.cs" />
-    <Compile Include="HttpHandler.cs" />
     <Compile Include="MessageDispatcher.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="HttpRequestMessage.cs" />
@@ -60,15 +59,18 @@
     <Compile Include="WebServer.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="WebSocketFrame.cs" />
-    <Compile Include="WebSocketHandler.cs" />
+    <Compile Include="WebSocketChat.cs" />
     <Compile Include="WebSocketHandShakeMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="chat.html">
+    <Content Include="Resources\chat.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\.gitkeep" />
   </ItemGroup>
 </Project>
