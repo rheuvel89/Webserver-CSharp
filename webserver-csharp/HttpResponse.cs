@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace nl.sogyo.webserver {
 
-    public class ResponseMessage : Response {
+    public class HttpResponse : Response {
 
         private string content;
         private DateTime date;
@@ -17,7 +17,7 @@ namespace nl.sogyo.webserver {
         private string connection = "close";
         private string contentType = "text/html; charset=UTF-8";
 
-        public ResponseMessage(string content, DateTime date, HttpStatusCode statusCode) {
+        public HttpResponse(string content, DateTime date, HttpStatusCode statusCode) {
             this.content = content;
             this.date = date;
             this.statusCode = statusCode;

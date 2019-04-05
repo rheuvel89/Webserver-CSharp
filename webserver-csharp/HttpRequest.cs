@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace nl.sogyo.webserver {
 
-    public class RequestMessage : Request {
+    public class HttpRequest : Request {
 
         private string request, resourceParameter, version;
         private HttpMethod httpMethod;
         private List<HeaderParameter> headerParameters = new List<HeaderParameter>();
         private List<Parameter> parameters = new List<Parameter>();   
 
-        public static RequestMessage parse(string request) {
-            return new RequestMessage(request);
+        public static HttpRequest parse(string request) {
+            return new HttpRequest(request);
         }
 
-        private RequestMessage(string request) {
+        private HttpRequest(string request) {
             this.request = request;
             int headerLineEnd = request.IndexOf("\r\n") + 2;
             int headerParametersEnd = request.IndexOf("\r\n\r\n") + 2;
@@ -62,7 +62,7 @@ namespace nl.sogyo.webserver {
         }
 
         public string GetHeaderParameterValue(string name) {
-            return headerParameters.Find(p => p.Key == name).Value;
+            return headerParameters.Find(p => p.Key.ToLower() == name.ToLower())?.Value;
         }
 
         public HttpMethod GetHTTPMethod() {
@@ -74,7 +74,7 @@ namespace nl.sogyo.webserver {
         }
 
         public string GetParameterValue(string name) {
-            return parameters.Find(p => p.Key == name).Value;
+            return parameters.Find(p => p.Key.ToLower() == name.ToLower())?.Value;
         }
 
         public string GetResourcePath() {

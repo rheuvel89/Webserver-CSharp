@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace nl.sogyo.webserver {
 
         string content =  "";
 
-        public HtmlDocument(RequestMessage request) {
+        public HtmlDocument(Request request) {
             AddLine("You did an HTTP GET request.");
             AddLine("Requested resource: " + request.GetResourcePath());
             AddLine();
@@ -19,6 +20,20 @@ namespace nl.sogyo.webserver {
             AddLine();
             AddLine("The following parameters were passed:");
             request.GetParameterNames().ForEach(p => AddLine(p + ": " + request.GetParameterValue(p)));
+        }
+
+        public HtmlDocument(string path) {
+            FileStream htmlFile = null;
+            StreamReader reader = null;
+            try {
+                path = Directory.GetCurrentDirectory() + "\\Resources" + path;
+                htmlFile = File.OpenRead(path);
+                reader = new StreamReader(htmlFile);
+                content = reader.ReadToEnd();
+            } finally {
+                reader?.Close();
+                htmlFile?.Close();
+            }
         }
 
         public void AddLine(string line) {

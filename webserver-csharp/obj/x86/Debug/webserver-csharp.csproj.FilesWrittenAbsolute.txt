@@ -1,5 +1,0 @@
-/home/talles/workspace/academy-opdrachten/talles/webserver-csharp/webserver-csharp/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/home/talles/workspace/academy-opdrachten/talles/webserver-csharp/webserver-csharp/bin/Debug/webserver-csharp.exe.mdb
-/home/talles/workspace/academy-opdrachten/talles/webserver-csharp/webserver-csharp/bin/Debug/webserver-csharp.exe
-/home/talles/workspace/academy-opdrachten/talles/webserver-csharp/webserver-csharp/obj/x86/Debug/webserver-csharp.exe
-/home/talles/workspace/academy-opdrachten/talles/webserver-csharp/webserver-csharp/obj/x86/Debug/webserver-csharp.exe.mdb
